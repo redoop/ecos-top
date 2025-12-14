@@ -1,9 +1,9 @@
-`define ip_0 3'd0 // project_2057
+//`define ip_0 3'd0 // project_2057
 `define ip_1 3'd1 // project_2017
-`define ip_2 3'd2 // project_2021
-`define ip_3 3'd3 // ysyxSoCASIC
+//`define ip_2 3'd2 // project_2021
+//`define ip_3 3'd3 // ysyxSoCASIC
 //`define ip_4 3'd4 // project_2099
-`define ip_5 3'd5 // project_2005
+//`define ip_5 3'd5 // project_2005
 
 module asic_top (
     input   ip_sel_pad0,
@@ -248,6 +248,7 @@ module asic_top (
         s_ysyx_uart0_rx    = 1'b0;
         s_ysyx_spi_miso    = 1'b0;
         s_ysyx_core_sel    = 2'b00;
+        s_ysyx_core_irq    = 1'b0;
 
         // Default assignments for ip4 signals
         ip4_uart_rx        = 1'b0;

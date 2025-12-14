@@ -1,0 +1,256 @@
+# Makefile for RTL Frontend Simulation using iverilog
+# Based on top/run/Makefile but adapted for iverilog
+
+.PHONY: all compile simulate wave clean help show-results
+
+# === Design Configuration ===
+DESIGN := soc_tb
+
+# Test options (can be overridden from command line)
+ip_sel :=
+prog :=
+wave :=
+
+# === Paths and Tools ===
+# Try to find tools in system PATH first, then fall back to OSS_CAD_SUITE
+IVERILOG := $(shell which iverilog || echo "/opt/oss-cad-suite/bin/iverilog")
+VVP := $(shell which vvp || echo "/opt/oss-cad-suite/bin/vvp")
+GTKWAVE := $(shell which gtkwave || echo "/opt/oss-cad-suite/bin/gtkwave")
+
+PROJECT_ROOT := $(shell pwd)
+TOP_DIR := $(PROJECT_ROOT)/../top
+RTL_PATH := $(TOP_DIR)
+WORK_DIR := $(shell pwd)/work
+
+# === Output Files ===
+EXECUTABLE := $(WORK_DIR)/$(DESIGN)
+VCD_FILE := $(WORK_DIR)/$(DESIGN).vcd
+FSDB_FILE := $(WORK_DIR)/$(DESIGN).fsdb
+COMPILE_LOG := $(WORK_DIR)/compile.log
+SIM_LOG := $(WORK_DIR)/sim.log
+
+# === Include Directories ===
+SIM_INC := -I$(TOP_DIR) \
+		   -I$(TOP_DIR)/utils \
+		   -I$(TOP_DIR)/../project_2005/source \
+		   -I$(TOP_DIR)/../project_2017/source \
+		   -I$(TOP_DIR)/../project_2021/source \
+		   -I$(TOP_DIR)/../project_2024/source \
+		   -I$(TOP_DIR)/../project_2025/source \
+		   -I$(TOP_DIR)/tb \
+		   -I$(TOP_DIR)/tb/include
+
+# === RTL File Lists ===
+# Convert VCS filelist format to iverilog compatible format
+RTL_FILES := $(TOP_DIR)/asic_top.sv \
+			 $(TOP_DIR)/utils/config.svh \
+			 $(TOP_DIR)/utils/clk_int_div.sv \
+			 $(TOP_DIR)/utils/register.sv \
+			 $(TOP_DIR)/utils/rst_sync.sv \
+			 $(TOP_DIR)/utils/xchecker.sv \
+			 $(TOP_DIR)/utils/stdcell.sv \
+			 $(TOP_DIR)/rcu/rcu.sv
+
+TB_FILES := $(TOP_DIR)/tb/soc_tb.sv \
+			$(TOP_DIR)/tb/N25Qxxx.v \
+			$(TOP_DIR)/tb/tty.v
+
+# === iverilog Options ===
+IVERILOG_FLAGS := -g2009 \
+				  -Wall \
+				  -Wno-timescale \
+				  -gno-assertions \
+				  -DIVERILOG \
+				  -Dno_warning \
+				  -DSVA_OFF \
+				  -DRANDOMIZE_REG_INIT \
+				  -DPDK_BEHAV \
+				  $(SIM_INC)
+
+VVP_FLAGS := -n
+
+# Test macros (converted from VCS format)
+TEST_DEFINES := $(addprefix -D, $(ip_sel) $(prog) $(wave))
+
+# === Default Target ===
+all: compile simulate show-results
+
+# === Create work directory ===
+$(WORK_DIR):
+	@mkdir -p $(WORK_DIR)
+
+# === Check Tools ===
+check-tools:
+	@echo "Checking iverilog installation..."
+	@if [ ! -f "$(IVERILOG)" ]; then \
+		echo "❌ Error: iverilog not found at $(IVERILOG)"; \
+		echo "   Please install oss-cad-suite or update OSS_CAD_SUITE path"; \
+		exit 1; \
+	fi
+	@echo "✅ Tools found: $(IVERILOG)"
+
+# === Compilation Target ===
+compile: $(WORK_DIR) check-tools
+	@echo "=================================================="
+	@echo "⚙️  Compiling RTL Design with iverilog..."
+	@echo "=================================================="
+	@echo "Design: $(DESIGN)"
+	@echo "Top module: soc_tb"
+	@echo "Output: $(EXECUTABLE)"
+	@echo ""
+	@echo "RTL Files:"
+	@for file in $(RTL_FILES); do \
+		if [ -f "$$file" ]; then \
+			echo "  ✓ $$file"; \
+		else \
+			echo "  ❌ $$file (missing)"; \
+		fi; \
+	done
+	@echo ""
+	@echo "Testbench Files:"
+	@for file in $(TB_FILES); do \
+		if [ -f "$$file" ]; then \
+			echo "  ✓ $$file"; \
+		else \
+			echo "  ❌ $$file (missing)"; \
+		fi; \
+	done
+	@echo ""
+	@echo "Compiling..."
+	@$(IVERILOG) $(IVERILOG_FLAGS) $(TEST_DEFINES) \
+		-o $(EXECUTABLE) \
+		$(RTL_FILES) $(TB_FILES) \
+		> $(COMPILE_LOG) 2>&1
+	@if [ $$? -eq 0 ]; then \
+		echo "✅ Compilation successful!"; \
+		echo "   Executable: $(EXECUTABLE)"; \
+	else \
+		echo "❌ Compilation failed! Check $(COMPILE_LOG)"; \
+		echo "--- Last 30 lines of compile log ---"; \
+		tail -30 $(COMPILE_LOG); \
+		exit 1; \
+	fi
+
+# === Simulation Target ===
+simulate: compile
+	@echo ""
+	@echo "=================================================="
+	@echo "▶️  Running RTL Simulation..."
+	@echo "=================================================="
+	@echo "Test options: ip_sel=$(ip_sel) prog=$(prog) wave=$(wave)"
+	@$(VVP) $(VVP_FLAGS) $(EXECUTABLE) > $(SIM_LOG) 2>&1
+	@if [ $$? -eq 0 ]; then \
+		echo "✅ Simulation completed successfully!"; \
+	else \
+		echo "⚠️  Simulation completed with status: $$?"; \
+	fi
+	@if [ -f "$(VCD_FILE)" ]; then \
+		VCD_SIZE=$$(stat -f%z "$(VCD_FILE)" 2>/dev/null || stat -c%s "$(VCD_FILE)"); \
+		VCD_SIZE_MB=$$(echo "scale=2; $$VCD_SIZE / 1024 / 1024" | bc -l 2>/dev/null || echo "$$((VCD_SIZE / 1024 / 1024))"); \
+		echo "✅ VCD file generated: $(VCD_FILE)"; \
+		echo "   Size: $$VCD_SIZE_MB MB"; \
+	else \
+		echo "⚠️  VCD file not generated"; \
+	fi
+
+# === Quick simulation with specific options ===
+sim: compile
+	./$(EXECUTABLE) $(addprefix +, $(ip_sel) $(prog) $(wave))
+
+# === Show Results ===
+show-results:
+	@echo ""
+	@echo "=================================================="
+	@echo "📊 Simulation Results"
+	@echo "=================================================="
+	@if [ -f "$(SIM_LOG)" ]; then \
+		echo "--- Last 30 lines of simulation log: ---"; \
+		tail -30 $(SIM_LOG); \
+	fi
+	@echo ""
+	@echo "Files generated:"
+	@ls -la $(WORK_DIR)/ 2>/dev/null || echo "No files in work directory"
+
+# === View Waveforms ===
+wave: simulate
+	@echo ""
+	@echo "Opening waveform viewer..."
+	@if [ -f "$(VCD_FILE)" ]; then \
+		$(GTKWAVE) $(VCD_FILE) &; \
+	else \
+		echo "❌ VCD file not found: $(VCD_FILE)"; \
+		echo "   Make sure simulation generates VCD output"; \
+		exit 1; \
+	fi
+
+# === Clean Target ===
+clean:
+	@echo "Cleaning simulation files..."
+	@rm -rf $(WORK_DIR)/*
+	@echo "✅ Clean completed"
+
+# === Help Target ===
+help:
+	@echo "=================================================="
+	@echo "RTL Frontend Simulation Makefile - $(DESIGN)"
+	@echo "=================================================="
+	@echo ""
+	@echo "Available targets:"
+	@echo ""
+	@echo "  make all          - Compile and run simulation (default)"
+	@echo "  make compile      - Compile RTL design with testbench"
+	@echo "  make simulate     - Run compiled simulation"
+	@echo "  make sim          - Quick simulation (equivalent to VCS sim target)"
+	@echo "  make wave         - Run simulation and open waveform viewer"
+	@echo "  make show-results - Display simulation results"
+	@echo "  make clean        - Remove generated files"
+	@echo "  make help         - Show this help message"
+	@echo ""
+	@echo "Test options (can be set on command line):"
+	@echo "  ip_sel=<value>    - IP selection option"
+	@echo "  prog=<value>      - Program option"
+	@echo "  wave=<value>      - Wave option"
+	@echo ""
+	@echo "Configuration:"
+	@echo "  OSS_CAD_SUITE: $(OSS_CAD_SUITE)"
+	@echo "  Design:        $(DESIGN)"
+	@echo "  RTL Path:      $(RTL_PATH)"
+	@echo "  Work dir:      $(WORK_DIR)"
+	@echo ""
+	@echo "Examples:"
+	@echo "  make                           # Compile and simulate"
+	@echo "  make sim ip_sel=uart prog=test # Simulate with options"
+	@echo "  make wave                      # Simulate and view waveforms"
+	@echo "  make clean                     # Clean simulation artifacts"
+	@echo ""
+
+# === Debug Target ===
+debug:
+	@echo "=================================================="
+	@echo "🔍 Debug Information"
+	@echo "=================================================="
+	@echo "PROJECT_ROOT: $(PROJECT_ROOT)"
+	@echo "TOP_DIR: $(TOP_DIR)"
+	@echo "RTL_PATH: $(RTL_PATH)"
+	@echo "WORK_DIR: $(WORK_DIR)"
+	@echo ""
+	@echo "Include directories:"
+	@echo "$(SIM_INC)" | tr ' ' '\n'
+	@echo ""
+	@echo "RTL Files status:"
+	@for file in $(RTL_FILES); do \
+		if [ -f "$$file" ]; then \
+			echo "  ✓ $$file"; \
+		else \
+			echo "  ❌ $$file (missing)"; \
+		fi; \
+	done
+	@echo ""
+	@echo "Testbench Files status:"
+	@for file in $(TB_FILES); do \
+		if [ -f "$$file" ]; then \
+			echo "  ✓ $$file"; \
+		else \
+			echo "  ❌ $$file (missing)"; \
+		fi; \
+	done

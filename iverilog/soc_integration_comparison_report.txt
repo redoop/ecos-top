@@ -1,0 +1,104 @@
+================================================================================
+SimpleEdgeAiSoC Integration Comparison Analysis
+================================================================================
+
+📊 File Size Comparison:
+  Standalone:  212,522 bytes (207.5 KB)
+  Integrated:  327,202 bytes (319.5 KB)
+  Difference:  +54.0% (larger when integrated)
+
+📈 Signal Count Comparison:
+  Standalone:  88 signals
+  Integrated:  110 signals
+  Difference:  +25.0% (more when integrated)
+
+🏗️  Hierarchy Depth Comparison:
+  Standalone:  2 levels
+  Integrated:  3 levels
+  Difference:  +1 levels when integrated
+
+⏱️  Simulation Time Comparison:
+  Standalone:  0 - 53981000 ns
+  Integrated:  0 - 53981000 ns
+  Duration:    Standalone: 53981.0 μs
+               Integrated: 53981.0 μs
+
+🏛️  Module Hierarchy Comparison:
+  Common modules:     0
+  Standalone only:    2
+  Integrated only:    3
+  Standalone unique:  standalone_soc_tb, u_standalone_soc
+  Integrated unique:  u_asic_top, soc_tb, u_simple_edge_ai_soc
+
+🔍 SimpleEdgeAiSoC Signal Analysis:
+  ACCELERATOR:
+    Common signals:     8
+    Standalone only:    0
+    Integrated only:    0
+    ✅ Consistent signals: io_compact_irq, io_bitnet_irq, soc_bitnet_irq
+
+  CPU:
+    Common signals:     7
+    Standalone only:    0
+    Integrated only:    0
+    ✅ Consistent signals: cpu_mem_addr [31:0], cpu_instruction [31:0], cpu_mem_rdata [31:0]
+
+  FLASH:
+    Common signals:     8
+    Standalone only:    0
+    Integrated only:    0
+    ✅ Consistent signals: io_flash_spi_cs, soc_flash_spi_miso, io_flash_spi_clk
+
+  GPIO:
+    Common signals:     6
+    Standalone only:    0
+    Integrated only:    0
+    ✅ Consistent signals: gpio_input_reg [31:0], io_gpio_in [15:0], soc_gpio_out [15:0]
+
+  LCD:
+    Common signals:     12
+    Standalone only:    0
+    Integrated only:    0
+    ✅ Consistent signals: io_lcd_backlight, soc_lcd_spi_clk, io_lcd_spi_dc
+
+  PSRAM:
+    Common signals:     20
+    Standalone only:    0
+    Integrated only:    0
+    ✅ Consistent signals: soc_psram_spi_sio2_in, soc_psram_spi_sio3_oe, soc_psram_spi_sio3_in
+
+  SPI:
+    Common signals:     23
+    Standalone only:    0
+    Integrated only:    3
+    ✅ Consistent signals: soc_psram_spi_clk, soc_psram_spi_cs, io_lcd_spi_clk
+    ℹ️  Integrated unique: s_ysyx_spi_miso_pad, s_ysyx_spi_miso_default, s_ysyx_spi_miso
+
+  TRAP:
+    Common signals:     2
+    Standalone only:    0
+    Integrated only:    0
+    ✅ Consistent signals: soc_trap, io_trap
+
+  UART:
+    Common signals:     12
+    Standalone only:    0
+    Integrated only:    0
+    ✅ Consistent signals: soc_uart_tx_irq, soc_uart_tx, soc_uart_rx_irq
+
+================================================================================
+📋 ANALYSIS SUMMARY
+================================================================================
+✅ Signal Consistency: GOOD - Key SimpleEdgeAiSoC signals present in both
+✅ Timing Consistency: GOOD - Similar simulation duration
+✅ Size Relationship: EXPECTED - Integrated version appropriately larger
+
+🎯 Overall Consistency Score: 3/3 (100%)
+✅ CONCLUSION: Integration is CONSISTENT - SimpleEdgeAiSoC behaves similarly in both configurations
+
+📝 RECOMMENDATIONS:
+1. ✅ Integrated version is larger as expected (includes ASIC wrapper)
+2. ✅ Integrated version has more signals (ASIC hierarchy)
+3. 🔍 Use GTKWave to visually compare key SimpleEdgeAiSoC signals
+4. 📊 Verify that SimpleEdgeAiSoC internal behavior is identical
+5. ⚡ Check that ASIC wrapper doesn't introduce timing delays

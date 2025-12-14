@@ -38,9 +38,9 @@ module soc_tb ();
       .io_pad10          (),
       .io_pad11          (old_ip_spi_flash_mosi_pad),
       .io_pad12          (old_ip_spi_flash_miso_pad),
-      .io_pad13          (1'b0),
-      .io_pad14          (1'b0),
-      .io_pad15          (1'b0),
+      .io_pad13          (),
+      .io_pad14          (),
+      .io_pad15          (),
       .io_pad16          (),
       .io_pad17          (),
       .io_pad18          (),
@@ -154,8 +154,13 @@ module soc_tb ();
         else if ($test$plusargs("ip_sel05")) r_ip_sel = 3'd5;
 
         if ($test$plusargs("dump_all")) begin
-          $fsdbDumpfile("soc_tb.fsdb");
-          $fsdbDumpvars(0, soc_tb, "+all");
+          `ifdef VCS
+            $fsdbDumpfile("soc_tb.fsdb");
+            $fsdbDumpvars(0, soc_tb, "+all");
+          `else
+            $dumpfile("soc_tb.vcd");
+            $dumpvars(0, soc_tb);
+          `endif
         end
 
         if      ($test$plusargs("asm-flash"))       #1000000    $finish;

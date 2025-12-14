@@ -1,0 +1,12 @@
++define+VERILATOR=1
++incdir+../utils
+../asic_top.sv
+../utils/config.svh
+../utils/clk_int_div.sv
+../utils/register.sv
+../utils/rst_sync.sv
+../utils/xchecker.sv
+../utils/stdcell.sv
+../rcu/rcu.sv
+N25Qxxx_fixed.v
+soc_tb_complete.sv
