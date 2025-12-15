@@ -248,7 +248,6 @@ module asic_top (
         s_ysyx_uart0_rx    = 1'b0;
         s_ysyx_spi_miso    = 1'b0;
         s_ysyx_core_sel    = 2'b00;
-        s_ysyx_core_irq    = 1'b0;
 
         // Default assignments for ip4 signals
         ip4_uart_rx        = 1'b0;
