@@ -1,0 +1,55 @@
+[0] *** FIXED TESTBENCH: All signals initialized to prevent X-states ***
+========================================
+ASIC TOP NETLIST TESTBENCH - FIXED VERSION
+========================================
+[0] Starting enhanced netlist simulation
+[0] VCD: Deep dump (5 levels)
+VCD info: dumpfile ./work/asic_top_netlist_fixed.vcd opened for output.
+[100000] === PHASE 1: Extended Reset Sequence ===
+[100000] IP Selection set to: 000
+[100000] Asserting reset for extended period...
+[2060000] Reset released - allowing stabilization
+[3060000] === PHASE 2: Basic Functionality Test ===
+[3060000] Testing default state (000)
+[3060000] IP Selection set to: 000
+[5060000] === PHASE 3: IP Selection Tests ===
+[5060000] Testing IP selection: 00000000000000000000000000000001
+[5060000] IP Selection set to: 001
+[8060000] IP Selection set to: 000
+[9060000] Testing IP selection: 00000000000000000000000000000010
+[9060000] IP Selection set to: 010
+[12060000] IP Selection set to: 000
+[13060000] Testing IP selection: 00000000000000000000000000000011
+[13060000] IP Selection set to: 011
+[16060000] IP Selection set to: 000
+[17060000] Testing IP selection: 00000000000000000000000000000100
+[17060000] IP Selection set to: 100
+[20060000] IP Selection set to: 000
+[21060000] Testing IP selection: 00000000000000000000000000000101
+[21060000] IP Selection set to: 101
+[24060000] IP Selection set to: 000
+[25060000] Testing IP selection: 00000000000000000000000000000110
+[25060000] IP Selection set to: 110
+[28060000] IP Selection set to: 000
+[29060000] Testing IP selection: 00000000000000000000000000000111
+[29060000] IP Selection set to: 111
+[32060000] === PHASE 4: Long-term Stability Test ===
+[32060000] IP Selection set to: 000
+[32060000] Running stability test for 500 cycles...
+[36100000] Progress: 100/500 cycles completed
+[40100000] Progress: 200/500 cycles completed
+[44100000] Progress: 300/500 cycles completed
+[48100000] Progress: 400/500 cycles completed
+[52060000] === PHASE 5: Final Validation ===
+[52060000] IP Selection set to: 000
+========================================
+SIMULATION COMPLETE - FINAL REPORT
+========================================
+[54060000] Total simulation time: 54060000
+[54060000] Total clock cycles: 1299
+[54060000] X-state detections: 0
+[54060000] Z-state detections: 0
+[54060000] *** SUCCESS: No X/Z states detected! ***
+[54060000] *** NETLIST SIMULATION PASSED ***
+========================================
+/opt/github/ecos-top/iverilog/asic_top_netlist_tb_fixed.sv:346: $finish called at 54060000 (1ps)
