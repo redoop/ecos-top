@@ -172,6 +172,14 @@ module asic_top (
     logic           ip1_io_bitnet_wen;
     logic           ip1_io_bitnet_ren;
     logic           ip1_io_bitnet_valid;
+    
+    // Compact accelerator interface signals
+    logic [31:0]    ip1_io_compact_addr;
+    logic [31:0]    ip1_io_compact_wdata;
+    logic [31:0]    ip1_io_compact_rdata;
+    logic           ip1_io_compact_wen;
+    logic           ip1_io_compact_ren;
+    logic           ip1_io_compact_valid;
 
     // ip2 signals
     logic           ip2_clk_25m;
@@ -248,6 +256,9 @@ module asic_top (
         
         // BitNet interface default assignments
         ip1_io_bitnet_rdata  = '0;  // Default read data when not connected
+        
+        // Compact interface default assignments
+        ip1_io_compact_rdata = '0;  // Default read data when not connected
 
         // Default assignments for ip2 signals
         ip2_TJUT_instload    = 1'b0;
@@ -341,11 +352,16 @@ module asic_top (
                 io_pad_o[75] = ip1_io_compact_irq;
                 io_pad_o[76] = ip1_io_bitnet_irq;
                 
-                // BitNet interface pad connections (using available pads 77-81)
+                // BitNet interface pad connections (using available pads 77-79)
                 io_pad_o[77] = ip1_io_bitnet_wen;
                 io_pad_o[78] = ip1_io_bitnet_ren;  
                 io_pad_o[79] = ip1_io_bitnet_valid;
-                // Note: BitNet addr[31:0], wdata[31:0], rdata[31:0] need wider pad allocation
+                
+                // Compact interface pad connections (using available pads 80-81)
+                io_pad_o[80] = ip1_io_compact_wen;
+                io_pad_o[81] = ip1_io_compact_ren;
+                // Note: Compact valid signal needs additional pad allocation
+                // Note: Both accelerator addr[31:0], wdata[31:0], rdata[31:0] need wider pad allocation
                 // This is a simplified connection for control signals only
             end
         `endif
