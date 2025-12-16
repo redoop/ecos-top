@@ -143,24 +143,24 @@ module soc_tb ();
     wait(r_ext_rst_n == 1'b1);
     repeat(100) @(posedge osc_clk_25m_i_pad);
     
-    $display("[%0t] Starting BitNet Accelerator Test", $time);
+    $display("[%0t] Starting BitNet Accelerator Interface Test", $time);
     
     // 选择IP1 (SimpleEdgeAiSoC) - BitNet加速器
     r_ip_sel = 3'd1;
     repeat(100) @(posedge osc_clk_25m_i_pad);
     
-    $display("[%0t] IP1 selected, BitNet SoC active", $time);
+    $display("[%0t] IP1 selected, BitNet SoC active with new interface", $time);
     
     // 等待系统完全稳定
     repeat(10000) @(posedge osc_clk_25m_i_pad);
     
-    // 这里可以添加更多具体的BitNet测试
-    $display("[%0t] BitNet system stabilized", $time);
+    // 这里可以添加更多具体的BitNet接口测试
+    $display("[%0t] BitNet interface signals now connected to asic_top", $time);
     
     // 运行一段时间让BitNet处理数据
     repeat(100000) @(posedge osc_clk_25m_i_pad);
     
-    $display("[%0t] BitNet Accelerator Test Phase Completed", $time);
+    $display("[%0t] BitNet Accelerator Interface Test Phase Completed", $time);
   end
 
   // BitNet加速器测试任务
