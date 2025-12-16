@@ -15,8 +15,8 @@ module soc_tb ();
   logic r_osc_clk_25m, r_ext_rst_n;
   logic [2:0] r_ip_sel;
 
-  assign osc_clk_25m_i_pad            = r_osc_clk_25m;
-  assign ext_rst_n_i_pad              = r_ext_rst_n;
+  assign osc_clk_25m_i_pad = r_osc_clk_25m;
+  assign ext_rst_n_i_pad = r_ext_rst_n;
 
   asic_top u_asic_top (
       .ip_sel_pad0       (r_ip_sel[0]),
@@ -137,12 +137,61 @@ module soc_tb ();
     end
   end
     
+  // BitNet加速器测试激励
+  initial begin
+    // 等待复位完成
+    wait(r_ext_rst_n == 1'b1);
+    repeat(100) @(posedge osc_clk_25m_i_pad);
+    
+    $display("[%0t] Starting BitNet Accelerator Test", $time);
+    
+    // 选择IP1 (SimpleEdgeAiSoC) - BitNet加速器
+    r_ip_sel = 3'd1;
+    repeat(100) @(posedge osc_clk_25m_i_pad);
+    
+    $display("[%0t] IP1 selected, BitNet SoC active", $time);
+    
+    // 等待系统完全稳定
+    repeat(10000) @(posedge osc_clk_25m_i_pad);
+    
+    // 这里可以添加更多具体的BitNet测试
+    $display("[%0t] BitNet system stabilized", $time);
+    
+    // 运行一段时间让BitNet处理数据
+    repeat(100000) @(posedge osc_clk_25m_i_pad);
+    
+    $display("[%0t] BitNet Accelerator Test Phase Completed", $time);
+  end
+
+  // BitNet加速器测试任务
+  task test_bitnet_accel();
+    // 等待复位完成
+    wait(r_ext_rst_n == 1'b1);
+    repeat(100) @(posedge osc_clk_25m_i_pad);
+    
+    $display("[%0t] Starting BitNet Accelerator Test", $time);
+    
+    // 选择IP1 (SimpleEdgeAiSoC)
+    r_ip_sel = 3'd1;
+    repeat(10) @(posedge osc_clk_25m_i_pad);
+    
+    // 等待系统稳定
+    repeat(1000) @(posedge osc_clk_25m_i_pad);
+    
+    $display("[%0t] BitNet Accelerator Test Completed", $time);
+  endtask
+
   initial begin
       sim_reset(400);
-      #105852000
-      while (1) begin
-        
-      end
+      
+      // 启动BitNet测试
+      test_bitnet_accel();
+      
+      // 运行足够长时间观察结果
+      #50000000;
+      
+      $display("[%0t] Simulation finished", $time);
+      $finish;
   end
 
     initial begin
@@ -158,6 +207,12 @@ module soc_tb ();
           $fsdbDumpvars(0, soc_tb, "+all");
         end
 
+`ifdef VCD_DUMP
+        // VCD dump for GTKWave
+        $dumpfile("soc_tb.vcd");
+        $dumpvars(0, soc_tb);
+`endif
+
         if      ($test$plusargs("asm-flash"))       #1000000    $finish;
         else if ($test$plusargs("hello-flash"))     #1000000    $finish;
         else if ($test$plusargs("hello-mem"))     #40000000   $finish;
@@ -168,6 +223,7 @@ module soc_tb ();
         else if ($test$plusargs("rtthread-flash"))  #1600000000 $finish;
         else if ($test$plusargs("rtthread-mem"))    #200000000  $finish;
         else if ($test$plusargs("rtthread-sdram"))  #200000000  $finish;
+        else if ($test$plusargs("bitnet-test"))     #100000000  $finish;
 
     end
 
