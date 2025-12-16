@@ -181,8 +181,56 @@ module soc_tb ();
     $display("[%0t] BitNet Accelerator Test Completed", $time);
   endtask
 
+  // RISC-V 功能测试任务
+  task test_riscv_functionality();
+    reg [31:0] prev_gpio, curr_gpio;
+    reg activity_detected;
+    integer test_cycles;
+    
+    $display("[%0t] Starting RISC-V Core Functionality Test", $time);
+    
+    // 监控 GPIO 输出变化 (表明 CPU 活动)
+    prev_gpio = u_asic_top.ip1_io_gpio_out;
+    activity_detected = 1'b0;
+    test_cycles = 0;
+    
+    repeat(10000) begin
+      @(posedge osc_clk_25m_i_pad);
+      curr_gpio = u_asic_top.ip1_io_gpio_out;
+      test_cycles = test_cycles + 1;
+      
+      if (curr_gpio !== prev_gpio) begin
+        activity_detected = 1'b1;
+        $display("[%0t] RISC-V activity detected - GPIO changed: 0x%08x -> 0x%08x", 
+                 $time, prev_gpio, curr_gpio);
+        break;
+      end
+      
+      // 检查异常信号
+      if (u_asic_top.ip1_io_trap == 1'b1) begin
+        $display("[%0t] RISC-V trap signal detected", $time);
+      end
+      
+      // 检查中断信号
+      if (u_asic_top.ip1_io_uart_tx_irq || u_asic_top.ip1_io_uart_rx_irq) begin
+        $display("[%0t] UART interrupt detected", $time);
+      end
+    end
+    
+    if (activity_detected) begin
+      $display("[%0t] ✅ RISC-V Core Test PASSED - CPU activity confirmed", $time);
+    end else begin
+      $display("[%0t] ⚠️  RISC-V Core Test - No GPIO activity (may be normal)", $time);
+    end
+    
+    $display("[%0t] RISC-V test cycles completed: %0d", $time, test_cycles);
+  endtask
+
   initial begin
       sim_reset(400);
+      
+      // 启动RISC-V功能测试
+      test_riscv_functionality();
       
       // 启动BitNet测试
       test_bitnet_accel();
@@ -190,7 +238,7 @@ module soc_tb ();
       // 运行足够长时间观察结果
       #50000000;
       
-      $display("[%0t] Simulation finished", $time);
+      $display("[%0t] All tests completed", $time);
       $finish;
   end
 

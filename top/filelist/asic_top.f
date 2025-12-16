@@ -1,5 +1,5 @@
-// $RTL_PATH/asic_top.sv
-$RTL_PATH/../asic_top_update.syn.v
+$RTL_PATH/asic_top.sv
+#$RTL_PATH/netlist/asic_top_V1210.syn.v
 $RTL_PATH/utils/config.svh
 $RTL_PATH/utils/clk_int_div.sv
 $RTL_PATH/utils/register.sv

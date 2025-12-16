@@ -1,1 +1,59 @@
+# License files
 synopsys.lic
+
+# Simulation generated files
+*.vcd
+*.fsdb
+*.log
+*.key
+simv
+simv.daidir/
+csrc/
+verdiLog/
+*.vmf
+
+# Compilation outputs
+*.o
+*.so
+*.bin
+compile.log
+sim.log
+ucli.key
+elabMhIdDidWork.txt
+
+# Test results and reports
+*_result.log
+*_test_result.log
+*_Analysis_Report.md
+*_Test_Report*.md
+*_Documentation.md
+*_Implementation.md
+*_Comparison_Table.md
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# Archive files
+*.tar.gz
+*.zip
+
+# Generated netlists (keep source netlists)
+# Uncomment if you want to exclude all netlists:
+# *.v
+# netlist/
+
+# IDE files
+.vscode/settings.json
+.vscode/launch.json
+
+# OS files
+.DS_Store
+Thumbs.db
