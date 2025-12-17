@@ -57,10 +57,16 @@ TIME_OPTION := +notimingcheck \
 			   +nospecify \
 
 comp:
-	${SIM_TOOL} ${SIM_OPTIONS} ${TIME_OPTION} ${RTL_FLIST} ${TB_FLIST} ${COMP_LOG}
+	bash -c "source ../../.bashrc && ${SIM_TOOL} ${SIM_OPTIONS} ${TIME_OPTION} ${RTL_FLIST} ${TB_FLIST} ${COMP_LOG}"
+
+comp_vcd:
+	bash -c "source ../../.bashrc && ${SIM_TOOL} ${SIM_OPTIONS} ${TIME_OPTION} +define+VCD_DUMP ${RTL_FLIST} ${TB_FLIST} ${COMP_LOG}"
 
 sim: comp
-	./simv ${SIM_LOG} $(TEST_MARCO)
+	bash -c "source ../../.bashrc && ./simv ${SIM_LOG} $(TEST_MARCO)"
+
+sim_vcd: comp_vcd
+	bash -c "source ../../.bashrc && ./simv ${SIM_LOG} $(TEST_MARCO)"
 
 wave:
 	${WAVE_TOOL} -ssf ${WAVE_FILE} -nologo

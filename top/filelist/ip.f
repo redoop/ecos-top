@@ -1,1 +1,1 @@
-$RTL_PATH/../project_2017/source/SimpleEdgeAiSoC.sv
+$RTL_PATH/project_2017/source/SimpleEdgeAiSoC.sv
