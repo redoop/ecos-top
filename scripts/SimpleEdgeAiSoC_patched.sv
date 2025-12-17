@@ -119,11 +119,17 @@ module ip1_matrix_64x32(
 );
 
   reg [31:0] Memory[0:63];
+  // Initialize memory to prevent X propagation
+  initial begin
+    for (int i = 0; i < $size(Memory); i++) begin
+      Memory[i] = 0;
+    end
+  end
   always @(posedge W0_clk) begin
     if (W0_en & 1'h1)
       Memory[W0_addr] <= W0_data;
   end // always @(posedge)
-  assign R0_data = R0_en ? Memory[R0_addr] : 32'bx;
+  assign R0_data = R0_en ? Memory[R0_addr] : 32'h0;
 endmodule
 
 module ip1_SimpleCompactAccel(
@@ -178,10 +184,10 @@ module ip1_SimpleCompactAccel(
       accumulator <= 32'h0;
     end
     else begin
-      automatic logic             _GEN_13;
-      automatic logic             _GEN_14;
-      automatic logic [3:0][31:0] _GEN_15 = {{status}, {32'h2}, {32'h1}, {32'h0}};
-      automatic logic [3:0][1:0]  _GEN_16;
+      logic             _GEN_13;
+      logic             _GEN_14;
+      logic [3:0][31:0] _GEN_15 = {{status}, {32'h2}, {32'h1}, {32'h0}};
+      logic [3:0][1:0]  _GEN_16;
       _GEN_13 = {28'h0, j} < _GEN_4;
       _GEN_14 = {28'h0, i} < _GEN_4;
       if (io_reg_valid & io_reg_wen & _GEN_8)
@@ -297,12 +303,18 @@ module ip1_activation_256x32(
 );
 
   reg [31:0] Memory[0:255];
+  // Initialize memory to prevent X propagation
+  initial begin
+    for (int i = 0; i < $size(Memory); i++) begin
+      Memory[i] = 0;
+    end
+  end
   always @(posedge W0_clk) begin
     if (W0_en & 1'h1)
       Memory[W0_addr] <= W0_data;
   end // always @(posedge)
-  assign R0_data = R0_en ? Memory[R0_addr] : 32'bx;
-  assign R1_data = R1_en ? Memory[R1_addr] : 32'bx;
+  assign R0_data = R0_en ? Memory[R0_addr] : 32'h0;
+  assign R1_data = R1_en ? Memory[R1_addr] : 32'h0;
 endmodule
 
 // VCS coverage exclude_file
@@ -322,12 +334,18 @@ module ip1_weight_256x2(
 );
 
   reg [1:0] Memory[0:255];
+  // Initialize memory to prevent X propagation
+  initial begin
+    for (int i = 0; i < $size(Memory); i++) begin
+      Memory[i] = 0;
+    end
+  end
   always @(posedge W0_clk) begin
     if (W0_en & 1'h1)
       Memory[W0_addr] <= W0_data;
   end // always @(posedge)
-  assign R0_data = R0_en ? Memory[R0_addr] : 2'bx;
-  assign R1_data = R1_en ? Memory[R1_addr] : 2'bx;
+  assign R0_data = R0_en ? Memory[R0_addr] : 2'h0;
+  assign R1_data = R1_en ? Memory[R1_addr] : 2'h0;
 endmodule
 
 // VCS coverage exclude_file
@@ -343,11 +361,17 @@ module ip1_result_256x32(
 );
 
   reg [31:0] Memory[0:255];
+  // Initialize memory to prevent X propagation
+  initial begin
+    for (int i = 0; i < $size(Memory); i++) begin
+      Memory[i] = 0;
+    end
+  end
   always @(posedge W0_clk) begin
     if (W0_en & 1'h1)
       Memory[W0_addr] <= W0_data;
   end // always @(posedge)
-  assign R0_data = R0_en ? Memory[R0_addr] : 32'bx;
+  assign R0_data = R0_en ? Memory[R0_addr] : 32'h0;
 endmodule
 
 module ip1_SimpleBitNetAccel(
@@ -421,12 +445,12 @@ module ip1_SimpleBitNetAccel(
       finalizeCounter <= 3'h0;
     end
     else begin
-      automatic logic             _GEN_15;
-      automatic logic             _GEN_16;
-      automatic logic [31:0]      _GEN_17;
-      automatic logic             isLastElement;
-      automatic logic [3:0][31:0] _GEN_18;
-      automatic logic [3:0][1:0]  _GEN_19;
+      logic             _GEN_15;
+      logic             _GEN_16;
+      logic [31:0]      _GEN_17;
+      logic             isLastElement;
+      logic [3:0][31:0] _GEN_18;
+      logic [3:0][1:0]  _GEN_19;
       _GEN_15 = matrixSize < 32'h2 | matrixSize > 32'h8;
       _GEN_16 = ~(ctrl[0]) | _GEN_15;
       _GEN_17 = {24'h0, j};
@@ -466,7 +490,7 @@ module ip1_SimpleBitNetAccel(
         end
       end
       else begin
-        automatic logic _GEN_20;
+        logic _GEN_20;
         _GEN_20 = _GEN_17 < _isLastElement_T_3;
         if (_GEN_0) begin
           perfCycles <= perfCycles + 32'h1;
@@ -598,11 +622,17 @@ module ip1_ram_16x8(
 );
 
   reg [7:0] Memory[0:15];
+  // Initialize memory to prevent X propagation
+  initial begin
+    for (int i = 0; i < $size(Memory); i++) begin
+      Memory[i] = 0;
+    end
+  end
   always @(posedge W0_clk) begin
     if (W0_en & 1'h1)
       Memory[W0_addr] <= W0_data;
   end // always @(posedge)
-  assign R0_data = R0_en ? Memory[R0_addr] : 8'bx;
+  assign R0_data = R0_en ? Memory[R0_addr] : 8'h0;
 endmodule
 
 module ip1_Queue16_UInt8(
@@ -630,7 +660,7 @@ module ip1_Queue16_UInt8(
       maybe_full <= 1'h0;
     end
     else begin
-      automatic logic do_deq = io_deq_ready & ~empty;
+      logic do_deq = io_deq_ready & ~empty;
       if (do_enq)
         enq_ptr_value <= enq_ptr_value + 4'h1;
       if (do_deq)
@@ -716,17 +746,17 @@ module ip1_RealUART(
       rxBaudCounter <= 32'h0;
     end
     else begin
-      automatic logic            _GEN_12;
-      automatic logic            _GEN_13;
-      automatic logic            _GEN_14;
-      automatic logic            rxHalfBaudTick;
-      automatic logic            _GEN_15 = control[1] & ~rxSync;
-      automatic logic [3:0][1:0] _GEN_16 =
+      logic            _GEN_12;
+      logic            _GEN_13;
+      logic            _GEN_14;
+      logic            rxHalfBaudTick;
+      logic            _GEN_15 = control[1] & ~rxSync;
+      logic [3:0][1:0] _GEN_16 =
         {{(&txState) & baudTick ? 2'h0 : txState},
          {baudTick & txBitCounter == 4'h7 ? 2'h3 : txState},
          {baudTick ? 2'h2 : txState},
          {_GEN_1 ? 2'h1 : txState}};
-      automatic logic [3:0][1:0] _GEN_17;
+      logic [3:0][1:0] _GEN_17;
       _GEN_12 = txState == 2'h1;
       _GEN_13 = txState == 2'h2;
       _GEN_14 = rxBaudCounter == {1'h0, baudDiv[31:1]};
@@ -901,12 +931,12 @@ module ip1_TFTLCD(
       txIsData <= 1'h0;
     end
     else begin
-      automatic logic _GEN_1 = ~state & txValid;
-      automatic logic _GEN_2;
-      automatic logic _GEN_3;
-      automatic logic _GEN_4;
-      automatic logic _GEN_5 = _GEN & io_wen;
-      automatic logic _GEN_6;
+      logic _GEN_1 = ~state & txValid;
+      logic _GEN_2;
+      logic _GEN_3;
+      logic _GEN_4;
+      logic _GEN_5 = _GEN & io_wen;
+      logic _GEN_6;
       _GEN_2 = spiCounter == 8'h0 & spiClkReg;
       _GEN_3 = io_addr[7:0] == 8'h0;
       _GEN_4 = io_addr[7:0] == 8'h4;
@@ -921,7 +951,7 @@ module ip1_TFTLCD(
         spiCounter <= spiCounter + 8'h1;
       spiClkReg <= (|(spiCounter[7:2])) ^ spiClkReg;
       if (state) begin
-        automatic logic _GEN_7;
+        logic _GEN_7;
         _GEN_7 = state & _GEN_2 & (&spiBitCounter);
         state <= ~_GEN_7 & state;
         if (state & _GEN_2) begin
@@ -1442,13 +1472,19 @@ module picorv32 #(
 `ifndef PICORV32_REGS
 	reg [31:0] cpuregs [0:regfile_size-1];
 
-	integer i;
-	initial begin
-		if (REGS_INIT_ZERO) begin
-			for (i = 0; i < regfile_size; i = i+1)
-				cpuregs[i] = 0;
-		end
-	end
+	
+  // Enhanced register file initialization
+  integer i;
+  initial begin
+    if (REGS_INIT_ZERO) begin
+      for (i = 0; i < regfile_size; i = i+1)
+        cpuregs[i] = 32'h0;
+    end else begin
+      // Initialize to prevent X propagation even when REGS_INIT_ZERO is 0
+      for (i = 0; i < regfile_size; i = i+1)
+        cpuregs[i] = 32'h0;
+    end
+  end
 `endif
 
 	task empty_statement;

@@ -21,14 +21,7 @@ RTL_FLIST := -f ../filelist/asic_top.f \
 
 SIM_INC := +incdir+../top \
 		   +incdir+../utils \
-		   +incdir+../../project_2005/source \
 		   +incdir+../../project_2017/source \
-		   +incdir+../../project_2021/source \
-		   +incdir+../../project_2024/source \
-		   +incdir+../../project_2025/source \
-		   +incdir+/nfs/share/home/qiming/soc/ysyxSoC/new_soc \
-		   +incdir+/nfs/share/home/qiming/soc/ysyxSoC/new_soc/ysyxSoC/perip/spi/rtl \
-		   +incdir+/nfs/share/home/qiming/soc/ysyxSoC/new_soc/ysyxSoC/perip/uart16550/rtl \
 		   +incdir+../tb \
 		   +incdir+../tb/include \
 
@@ -46,6 +39,7 @@ SIM_OPTIONS := -full64  +v2k -sverilog -timescale=1ns/10ps \
 			   +define+no_warning \
 			   +define+S50 \
 			   +define+SVA_OFF \
+			   +define+VCD_DUMP \
 			   -work DEFAULT \
 			   +define+RANDOMIZE_REG_INIT \
 			   +define+PDK_BEHAV \
@@ -74,4 +68,4 @@ wave:
 .PHONY : clean
 
 clean :
-	rm -fr csrc *simv.daidir* *simv* ucli.key vcdplus.vpd DVEfiles INCA_libs *.fsdb* *.log novas.*
+	rm -fr csrc *simv.daidir* *simv* ucli.key vcdplus.vpd DVEfiles INCA_libs *.fsdb* *.vcd *.log novas.*
