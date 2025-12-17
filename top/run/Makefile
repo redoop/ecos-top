@@ -1,7 +1,7 @@
 DESIGN := soc_tb
 
 ip_sel :=
-prog :=
+prog := hello-mem
 wave :=
 
 TEST_MARCO := $(addprefix +, $(ip_sel), $(prog) $(wave))
@@ -53,19 +53,28 @@ TIME_OPTION := +notimingcheck \
 comp:
 	bash -c "source ../../.bashrc && ${SIM_TOOL} ${SIM_OPTIONS} ${TIME_OPTION} ${RTL_FLIST} ${TB_FLIST} ${COMP_LOG}"
 
-comp_vcd:
-	bash -c "source ../../.bashrc && ${SIM_TOOL} ${SIM_OPTIONS} ${TIME_OPTION} +define+VCD_DUMP ${RTL_FLIST} ${TB_FLIST} ${COMP_LOG}"
-
 sim: comp
 	bash -c "source ../../.bashrc && ./simv ${SIM_LOG} $(TEST_MARCO)"
 
-sim_vcd: comp_vcd
-	bash -c "source ../../.bashrc && ./simv ${SIM_LOG} $(TEST_MARCO)"
+sim_vcd: comp
+	bash -c "source ../../.bashrc && ./simv ${SIM_LOG} $(TEST_MARCO) +dump_all"
 
 wave:
 	${WAVE_TOOL} -ssf ${WAVE_FILE} -nologo
 
-.PHONY : clean
+.PHONY : clean help
+
+help:
+	@echo "Available targets:"
+	@echo "  comp     - Compile design"
+	@echo "  sim      - Run simulation (default: hello-mem test)"
+	@echo "  sim_vcd  - Run simulation with VCD dump"
+	@echo "  wave     - Open waveform viewer"
+	@echo "  clean    - Clean generated files"
+	@echo ""
+	@echo "Usage examples:"
+	@echo "  make sim prog=hello-flash"
+	@echo "  make sim_vcd prog=memtest-mem"
 
 clean :
 	rm -fr csrc *simv.daidir* *simv* ucli.key vcdplus.vpd DVEfiles INCA_libs *.fsdb* *.vcd *.log novas.*

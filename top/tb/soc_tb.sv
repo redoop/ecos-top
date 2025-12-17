@@ -15,8 +15,8 @@ module soc_tb ();
   logic r_osc_clk_25m, r_ext_rst_n;
   logic [2:0] r_ip_sel;
 
-  assign osc_clk_25m_i_pad = r_osc_clk_25m;
-  assign ext_rst_n_i_pad = r_ext_rst_n;
+  assign osc_clk_25m_i_pad            = r_osc_clk_25m;
+  assign ext_rst_n_i_pad              = r_ext_rst_n;
 
   asic_top u_asic_top (
       .ip_sel_pad0       (r_ip_sel[0]),
@@ -137,109 +137,12 @@ module soc_tb ();
     end
   end
     
-  // BitNet加速器测试激励
-  initial begin
-    // 等待复位完成
-    wait(r_ext_rst_n == 1'b1);
-    repeat(100) @(posedge osc_clk_25m_i_pad);
-    
-    $display("[%0t] Starting BitNet & Compact Accelerator Interface Test", $time);
-    
-    // 选择IP1 (SimpleEdgeAiSoC) - BitNet加速器
-    r_ip_sel = 3'd1;
-    repeat(100) @(posedge osc_clk_25m_i_pad);
-    
-    $display("[%0t] IP1 selected, BitNet & Compact SoC active with new interfaces", $time);
-    
-    // 等待系统完全稳定
-    repeat(10000) @(posedge osc_clk_25m_i_pad);
-    
-    // 这里可以添加更多具体的BitNet和Compact接口测试
-    $display("[%0t] BitNet & Compact interface signals now connected to asic_top", $time);
-    
-    // 运行一段时间让加速器处理数据
-    repeat(100000) @(posedge osc_clk_25m_i_pad);
-    
-    $display("[%0t] BitNet & Compact Accelerator Interface Test Phase Completed", $time);
-  end
-
-  // BitNet加速器测试任务
-  task test_bitnet_accel();
-    // 等待复位完成
-    wait(r_ext_rst_n == 1'b1);
-    repeat(100) @(posedge osc_clk_25m_i_pad);
-    
-    $display("[%0t] Starting BitNet Accelerator Test", $time);
-    
-    // 选择IP1 (SimpleEdgeAiSoC)
-    r_ip_sel = 3'd1;
-    repeat(10) @(posedge osc_clk_25m_i_pad);
-    
-    // 等待系统稳定
-    repeat(1000) @(posedge osc_clk_25m_i_pad);
-    
-    $display("[%0t] BitNet Accelerator Test Completed", $time);
-  endtask
-
-  // RISC-V 功能测试任务
-  task test_riscv_functionality();
-    reg [31:0] prev_gpio, curr_gpio;
-    reg activity_detected;
-    integer test_cycles;
-    
-    $display("[%0t] Starting RISC-V Core Functionality Test", $time);
-    
-    // 监控 GPIO 输出变化 (表明 CPU 活动)
-    prev_gpio = u_asic_top.ip1_io_gpio_out;
-    activity_detected = 1'b0;
-    test_cycles = 0;
-    
-    repeat(10000) begin
-      @(posedge osc_clk_25m_i_pad);
-      curr_gpio = u_asic_top.ip1_io_gpio_out;
-      test_cycles = test_cycles + 1;
-      
-      if (curr_gpio !== prev_gpio) begin
-        activity_detected = 1'b1;
-        $display("[%0t] RISC-V activity detected - GPIO changed: 0x%08x -> 0x%08x", 
-                 $time, prev_gpio, curr_gpio);
-        break;
-      end
-      
-      // 检查异常信号
-      if (u_asic_top.ip1_io_trap == 1'b1) begin
-        $display("[%0t] RISC-V trap signal detected", $time);
-      end
-      
-      // 检查中断信号
-      if (u_asic_top.ip1_io_uart_tx_irq || u_asic_top.ip1_io_uart_rx_irq) begin
-        $display("[%0t] UART interrupt detected", $time);
-      end
-    end
-    
-    if (activity_detected) begin
-      $display("[%0t] ✅ RISC-V Core Test PASSED - CPU activity confirmed", $time);
-    end else begin
-      $display("[%0t] ⚠️  RISC-V Core Test - No GPIO activity (may be normal)", $time);
-    end
-    
-    $display("[%0t] RISC-V test cycles completed: %0d", $time, test_cycles);
-  endtask
-
   initial begin
       sim_reset(400);
-      
-      // 启动RISC-V功能测试
-      test_riscv_functionality();
-      
-      // 启动BitNet测试
-      test_bitnet_accel();
-      
-      // 运行足够长时间观察结果
-      #50000000;
-      
-      $display("[%0t] All tests completed", $time);
-      $finish;
+      #105852000
+      while (1) begin
+        
+      end
   end
 
     initial begin
@@ -253,13 +156,9 @@ module soc_tb ();
         if ($test$plusargs("dump_all")) begin
           $fsdbDumpfile("soc_tb.fsdb");
           $fsdbDumpvars(0, soc_tb, "+all");
+          $dumpfile("soc_tb.vcd");
+          $dumpvars(0, soc_tb);
         end
-
-`ifdef VCD_DUMP
-        // VCD dump for GTKWave
-        $dumpfile("soc_tb.vcd");
-        $dumpvars(0, soc_tb);
-`endif
 
         if      ($test$plusargs("asm-flash"))       #1000000    $finish;
         else if ($test$plusargs("hello-flash"))     #1000000    $finish;
@@ -271,7 +170,6 @@ module soc_tb ();
         else if ($test$plusargs("rtthread-flash"))  #1600000000 $finish;
         else if ($test$plusargs("rtthread-mem"))    #200000000  $finish;
         else if ($test$plusargs("rtthread-sdram"))  #200000000  $finish;
-        else if ($test$plusargs("bitnet-test"))     #100000000  $finish;
 
     end
 
