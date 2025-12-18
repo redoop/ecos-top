@@ -1,0 +1,1 @@
+#$RTL_PATH/netlist/asic_top_V1210.syn.v

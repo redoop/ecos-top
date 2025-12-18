@@ -164,22 +164,6 @@ module asic_top (
     logic           ip1_io_bitnet_irq;
     logic           ip1_io_uart_tx_irq;
     logic           ip1_io_uart_rx_irq;
-    
-    // BitNet accelerator interface signals
-    logic [31:0]    ip1_io_bitnet_addr;
-    logic [31:0]    ip1_io_bitnet_wdata;
-    logic [31:0]    ip1_io_bitnet_rdata;
-    logic           ip1_io_bitnet_wen;
-    logic           ip1_io_bitnet_ren;
-    logic           ip1_io_bitnet_valid;
-    
-    // Compact accelerator interface signals
-    logic [31:0]    ip1_io_compact_addr;
-    logic [31:0]    ip1_io_compact_wdata;
-    logic [31:0]    ip1_io_compact_rdata;
-    logic           ip1_io_compact_wen;
-    logic           ip1_io_compact_ren;
-    logic           ip1_io_compact_valid;
 
     // ip2 signals
     logic           ip2_clk_25m;
@@ -253,12 +237,6 @@ module asic_top (
         // Default assignments for ip1 signals
         ip1_io_uart_rx       = 1'b0;
         ip1_io_gpio_in       = '0;
-        
-        // BitNet interface default assignments
-        ip1_io_bitnet_rdata  = '0;  // Default read data when not connected
-        
-        // Compact interface default assignments
-        ip1_io_compact_rdata = '0;  // Default read data when not connected
 
         // Default assignments for ip2 signals
         ip2_TJUT_instload    = 1'b0;
@@ -332,8 +310,6 @@ module asic_top (
                 io_pad_oe[64] = 1'b1;
                 io_pad_oe[65] = 1'b0;
                 io_pad_oe[76:66] = {11{1'b1}};
-                // BitNet interface pad enables
-                io_pad_oe[81:77] = 5'b11110;  // addr[31:0], wdata[31:0], wen, ren, valid as outputs; rdata[31:0] as input
 
                 ip1_io_gpio_in = io_pad_i[31:0];
                 io_pad_o[63:32] = ip1_io_gpio_out;
@@ -351,18 +327,6 @@ module asic_top (
                 io_pad_o[74] = ip1_io_trap;
                 io_pad_o[75] = ip1_io_compact_irq;
                 io_pad_o[76] = ip1_io_bitnet_irq;
-                
-                // BitNet interface pad connections (using available pads 77-79)
-                io_pad_o[77] = ip1_io_bitnet_wen;
-                io_pad_o[78] = ip1_io_bitnet_ren;  
-                io_pad_o[79] = ip1_io_bitnet_valid;
-                
-                // Compact interface pad connections (using available pads 80-81)
-                io_pad_o[80] = ip1_io_compact_wen;
-                io_pad_o[81] = ip1_io_compact_ren;
-                // Note: Compact valid signal needs additional pad allocation
-                // Note: Both accelerator addr[31:0], wdata[31:0], rdata[31:0] need wider pad allocation
-                // This is a simplified connection for control signals only
             end
         `endif
         `ifdef ip_2
@@ -601,95 +565,95 @@ rcu u_rcu (
     .rst_25m_n_o        (rst_25m_n)  
 );
 
-P65_1233_PWE u_sys_clk_pad (.E(1'b1), .XIN(sys_clk_i_pad), .XOUT(sys_clk_o_pad), .XC(sys_clk), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
+P65_1233_PWE u_sys_clk_pad (.E(1'b1), .XIN(sys_clk_i_pad), .XOUT(sys_clk_o_pad), .XC(sys_clk));
 
-P65_1233_PBMUX u_rst_n_pad (.C(rst_n), .A(), .PAD(rst_n_pad), .IE(1'b1), .CS(1'b0), .I(1'b0), .OE(1'b0), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_ip_sel_pad0 (.C(ip_sel[0]), .A(), .PAD(ip_sel_pad0), .IE(1'b1), .CS(1'b0), .I(1'b0), .OE(1'b0), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_ip_sel_pad1 (.C(ip_sel[1]), .A(), .PAD(ip_sel_pad1), .IE(1'b1), .CS(1'b0), .I(1'b0), .OE(1'b0), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_ip_sel_pad2 (.C(ip_sel[2]), .A(), .PAD(ip_sel_pad2), .IE(1'b1), .CS(1'b0), .I(1'b0), .OE(1'b0), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
+P65_1233_PBMUX u_rst_n_pad (.C(rst_n), .A(), .PAD(rst_n_pad), .IE(1'b1), .CS(1'b0), .I(1'b0), .OE(1'b0), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_ip_sel_pad0 (.C(ip_sel[0]), .A(), .PAD(ip_sel_pad0), .IE(1'b1), .CS(1'b0), .I(1'b0), .OE(1'b0), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_ip_sel_pad1 (.C(ip_sel[1]), .A(), .PAD(ip_sel_pad1), .IE(1'b1), .CS(1'b0), .I(1'b0), .OE(1'b0), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_ip_sel_pad2 (.C(ip_sel[2]), .A(), .PAD(ip_sel_pad2), .IE(1'b1), .CS(1'b0), .I(1'b0), .OE(1'b0), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
 
-P65_1233_PBMUX u_io_pad0 (.C(io_pad_i[0]),   .A(), .PAD(io_pad0),  .IE(~io_pad_oe[0]),  .CS(1'b0), .I(io_pad_o[0]),  .OE(io_pad_oe[0]),  .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad1 (.C(io_pad_i[1]),   .A(), .PAD(io_pad1),  .IE(~io_pad_oe[1]),  .CS(1'b0), .I(io_pad_o[1]),  .OE(io_pad_oe[1]),  .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad2 (.C(io_pad_i[2]),   .A(), .PAD(io_pad2),  .IE(~io_pad_oe[2]),  .CS(1'b0), .I(io_pad_o[2]),  .OE(io_pad_oe[2]),  .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad3 (.C(io_pad_i[3]),   .A(), .PAD(io_pad3),  .IE(~io_pad_oe[3]),  .CS(1'b0), .I(io_pad_o[3]),  .OE(io_pad_oe[3]),  .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad4 (.C(io_pad_i[4]),   .A(), .PAD(io_pad4),  .IE(~io_pad_oe[4]),  .CS(1'b0), .I(io_pad_o[4]),  .OE(io_pad_oe[4]),  .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad5 (.C(io_pad_i[5]),   .A(), .PAD(io_pad5),  .IE(~io_pad_oe[5]),  .CS(1'b0), .I(io_pad_o[5]),  .OE(io_pad_oe[5]),  .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad6 (.C(io_pad_i[6]),   .A(), .PAD(io_pad6),  .IE(~io_pad_oe[6]),  .CS(1'b0), .I(io_pad_o[6]),  .OE(io_pad_oe[6]),  .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO)); 
-P65_1233_PBMUX u_io_pad7 (.C(io_pad_i[7]),   .A(), .PAD(io_pad7),  .IE(~io_pad_oe[7]),  .CS(1'b0), .I(io_pad_o[7]),  .OE(io_pad_oe[7]),  .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad8 (.C(io_pad_i[8]),   .A(), .PAD(io_pad8),  .IE(~io_pad_oe[8]),  .CS(1'b0), .I(io_pad_o[8]),  .OE(io_pad_oe[8]),  .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad9 (.C(io_pad_i[9]),   .A(), .PAD(io_pad9),  .IE(~io_pad_oe[9]),  .CS(1'b0), .I(io_pad_o[9]),  .OE(io_pad_oe[9]),  .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad10 (.C(io_pad_i[10]), .A(), .PAD(io_pad10), .IE(~io_pad_oe[10]), .CS(1'b0), .I(io_pad_o[10]), .OE(io_pad_oe[10]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad11 (.C(io_pad_i[11]), .A(), .PAD(io_pad11), .IE(~io_pad_oe[11]), .CS(1'b0), .I(io_pad_o[11]), .OE(io_pad_oe[11]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad12 (.C(io_pad_i[12]), .A(), .PAD(io_pad12), .IE(~io_pad_oe[12]), .CS(1'b0), .I(io_pad_o[12]), .OE(io_pad_oe[12]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad13 (.C(io_pad_i[13]), .A(), .PAD(io_pad13), .IE(~io_pad_oe[13]), .CS(1'b0), .I(io_pad_o[13]), .OE(io_pad_oe[13]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad14 (.C(io_pad_i[14]), .A(), .PAD(io_pad14), .IE(~io_pad_oe[14]), .CS(1'b0), .I(io_pad_o[14]), .OE(io_pad_oe[14]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad15 (.C(io_pad_i[15]), .A(), .PAD(io_pad15), .IE(~io_pad_oe[15]), .CS(1'b0), .I(io_pad_o[15]), .OE(io_pad_oe[15]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad16 (.C(io_pad_i[16]), .A(), .PAD(io_pad16), .IE(~io_pad_oe[16]), .CS(1'b0), .I(io_pad_o[16]), .OE(io_pad_oe[16]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad17 (.C(io_pad_i[17]), .A(), .PAD(io_pad17), .IE(~io_pad_oe[17]), .CS(1'b0), .I(io_pad_o[17]), .OE(io_pad_oe[17]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad18 (.C(io_pad_i[18]), .A(), .PAD(io_pad18), .IE(~io_pad_oe[18]), .CS(1'b0), .I(io_pad_o[18]), .OE(io_pad_oe[18]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad19 (.C(io_pad_i[19]), .A(), .PAD(io_pad19), .IE(~io_pad_oe[19]), .CS(1'b0), .I(io_pad_o[19]), .OE(io_pad_oe[19]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad20 (.C(io_pad_i[20]), .A(), .PAD(io_pad20), .IE(~io_pad_oe[20]), .CS(1'b0), .I(io_pad_o[20]), .OE(io_pad_oe[20]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad21 (.C(io_pad_i[21]), .A(), .PAD(io_pad21), .IE(~io_pad_oe[21]), .CS(1'b0), .I(io_pad_o[21]), .OE(io_pad_oe[21]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad22 (.C(io_pad_i[22]), .A(), .PAD(io_pad22), .IE(~io_pad_oe[22]), .CS(1'b0), .I(io_pad_o[22]), .OE(io_pad_oe[22]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad23 (.C(io_pad_i[23]), .A(), .PAD(io_pad23), .IE(~io_pad_oe[23]), .CS(1'b0), .I(io_pad_o[23]), .OE(io_pad_oe[23]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad24 (.C(io_pad_i[24]), .A(), .PAD(io_pad24), .IE(~io_pad_oe[24]), .CS(1'b0), .I(io_pad_o[24]), .OE(io_pad_oe[24]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad25 (.C(io_pad_i[25]), .A(), .PAD(io_pad25), .IE(~io_pad_oe[25]), .CS(1'b0), .I(io_pad_o[25]), .OE(io_pad_oe[25]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad26 (.C(io_pad_i[26]), .A(), .PAD(io_pad26), .IE(~io_pad_oe[26]), .CS(1'b0), .I(io_pad_o[26]), .OE(io_pad_oe[26]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad27 (.C(io_pad_i[27]), .A(), .PAD(io_pad27), .IE(~io_pad_oe[27]), .CS(1'b0), .I(io_pad_o[27]), .OE(io_pad_oe[27]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad28 (.C(io_pad_i[28]), .A(), .PAD(io_pad28), .IE(~io_pad_oe[28]), .CS(1'b0), .I(io_pad_o[28]), .OE(io_pad_oe[28]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad29 (.C(io_pad_i[29]), .A(), .PAD(io_pad29), .IE(~io_pad_oe[29]), .CS(1'b0), .I(io_pad_o[29]), .OE(io_pad_oe[29]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad30 (.C(io_pad_i[30]), .A(), .PAD(io_pad30), .IE(~io_pad_oe[30]), .CS(1'b0), .I(io_pad_o[30]), .OE(io_pad_oe[30]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad31 (.C(io_pad_i[31]), .A(), .PAD(io_pad31), .IE(~io_pad_oe[31]), .CS(1'b0), .I(io_pad_o[31]), .OE(io_pad_oe[31]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad32 (.C(io_pad_i[32]), .A(), .PAD(io_pad32), .IE(~io_pad_oe[32]), .CS(1'b0), .I(io_pad_o[32]), .OE(io_pad_oe[32]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad33 (.C(io_pad_i[33]), .A(), .PAD(io_pad33), .IE(~io_pad_oe[33]), .CS(1'b0), .I(io_pad_o[33]), .OE(io_pad_oe[33]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad34 (.C(io_pad_i[34]), .A(), .PAD(io_pad34), .IE(~io_pad_oe[34]), .CS(1'b0), .I(io_pad_o[34]), .OE(io_pad_oe[34]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad35 (.C(io_pad_i[35]), .A(), .PAD(io_pad35), .IE(~io_pad_oe[35]), .CS(1'b0), .I(io_pad_o[35]), .OE(io_pad_oe[35]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad36 (.C(io_pad_i[36]), .A(), .PAD(io_pad36), .IE(~io_pad_oe[36]), .CS(1'b0), .I(io_pad_o[36]), .OE(io_pad_oe[36]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad37 (.C(io_pad_i[37]), .A(), .PAD(io_pad37), .IE(~io_pad_oe[37]), .CS(1'b0), .I(io_pad_o[37]), .OE(io_pad_oe[37]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad38 (.C(io_pad_i[38]), .A(), .PAD(io_pad38), .IE(~io_pad_oe[38]), .CS(1'b0), .I(io_pad_o[38]), .OE(io_pad_oe[38]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad39 (.C(io_pad_i[39]), .A(), .PAD(io_pad39), .IE(~io_pad_oe[39]), .CS(1'b0), .I(io_pad_o[39]), .OE(io_pad_oe[39]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad40 (.C(io_pad_i[40]), .A(), .PAD(io_pad40), .IE(~io_pad_oe[40]), .CS(1'b0), .I(io_pad_o[40]), .OE(io_pad_oe[40]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad41 (.C(io_pad_i[41]), .A(), .PAD(io_pad41), .IE(~io_pad_oe[41]), .CS(1'b0), .I(io_pad_o[41]), .OE(io_pad_oe[41]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad42 (.C(io_pad_i[42]), .A(), .PAD(io_pad42), .IE(~io_pad_oe[42]), .CS(1'b0), .I(io_pad_o[42]), .OE(io_pad_oe[42]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad43 (.C(io_pad_i[43]), .A(), .PAD(io_pad43), .IE(~io_pad_oe[43]), .CS(1'b0), .I(io_pad_o[43]), .OE(io_pad_oe[43]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad44 (.C(io_pad_i[44]), .A(), .PAD(io_pad44), .IE(~io_pad_oe[44]), .CS(1'b0), .I(io_pad_o[44]), .OE(io_pad_oe[44]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad45 (.C(io_pad_i[45]), .A(), .PAD(io_pad45), .IE(~io_pad_oe[45]), .CS(1'b0), .I(io_pad_o[45]), .OE(io_pad_oe[45]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad46 (.C(io_pad_i[46]), .A(), .PAD(io_pad46), .IE(~io_pad_oe[46]), .CS(1'b0), .I(io_pad_o[46]), .OE(io_pad_oe[46]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad47 (.C(io_pad_i[47]), .A(), .PAD(io_pad47), .IE(~io_pad_oe[47]), .CS(1'b0), .I(io_pad_o[47]), .OE(io_pad_oe[47]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad48 (.C(io_pad_i[48]), .A(), .PAD(io_pad48), .IE(~io_pad_oe[48]), .CS(1'b0), .I(io_pad_o[48]), .OE(io_pad_oe[48]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad49 (.C(io_pad_i[49]), .A(), .PAD(io_pad49), .IE(~io_pad_oe[49]), .CS(1'b0), .I(io_pad_o[49]), .OE(io_pad_oe[49]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad50 (.C(io_pad_i[50]), .A(), .PAD(io_pad50), .IE(~io_pad_oe[50]), .CS(1'b0), .I(io_pad_o[50]), .OE(io_pad_oe[50]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad51 (.C(io_pad_i[51]), .A(), .PAD(io_pad51), .IE(~io_pad_oe[51]), .CS(1'b0), .I(io_pad_o[51]), .OE(io_pad_oe[51]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad52 (.C(io_pad_i[52]), .A(), .PAD(io_pad52), .IE(~io_pad_oe[52]), .CS(1'b0), .I(io_pad_o[52]), .OE(io_pad_oe[52]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad53 (.C(io_pad_i[53]), .A(), .PAD(io_pad53), .IE(~io_pad_oe[53]), .CS(1'b0), .I(io_pad_o[53]), .OE(io_pad_oe[53]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad54 (.C(io_pad_i[54]), .A(), .PAD(io_pad54), .IE(~io_pad_oe[54]), .CS(1'b0), .I(io_pad_o[54]), .OE(io_pad_oe[54]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad55 (.C(io_pad_i[55]), .A(), .PAD(io_pad55), .IE(~io_pad_oe[55]), .CS(1'b0), .I(io_pad_o[55]), .OE(io_pad_oe[55]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad56 (.C(io_pad_i[56]), .A(), .PAD(io_pad56), .IE(~io_pad_oe[56]), .CS(1'b0), .I(io_pad_o[56]), .OE(io_pad_oe[56]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad57 (.C(io_pad_i[57]), .A(), .PAD(io_pad57), .IE(~io_pad_oe[57]), .CS(1'b0), .I(io_pad_o[57]), .OE(io_pad_oe[57]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad58 (.C(io_pad_i[58]), .A(), .PAD(io_pad58), .IE(~io_pad_oe[58]), .CS(1'b0), .I(io_pad_o[58]), .OE(io_pad_oe[58]), .OD(1'b0), .PU(io_pad_pu[0]), .PD(io_pad_pd[0]), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad59 (.C(io_pad_i[59]), .A(), .PAD(io_pad59), .IE(~io_pad_oe[59]), .CS(1'b0), .I(io_pad_o[59]), .OE(io_pad_oe[59]), .OD(1'b0), .PU(io_pad_pu[1]), .PD(io_pad_pd[1]), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad60 (.C(io_pad_i[60]), .A(), .PAD(io_pad60), .IE(~io_pad_oe[60]), .CS(1'b0), .I(io_pad_o[60]), .OE(io_pad_oe[60]), .OD(1'b0), .PU(io_pad_pu[2]), .PD(io_pad_pd[2]), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad61 (.C(io_pad_i[61]), .A(), .PAD(io_pad61), .IE(~io_pad_oe[61]), .CS(1'b0), .I(io_pad_o[61]), .OE(io_pad_oe[61]), .OD(1'b0), .PU(io_pad_pu[3]), .PD(io_pad_pd[3]), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));  
-P65_1233_PBMUX u_io_pad62 (.C(io_pad_i[62]), .A(), .PAD(io_pad62), .IE(~io_pad_oe[62]), .CS(1'b0), .I(io_pad_o[62]), .OE(io_pad_oe[62]), .OD(1'b0), .PU(io_pad_pu[4]), .PD(io_pad_pd[4]), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad63 (.C(io_pad_i[63]), .A(), .PAD(io_pad63), .IE(~io_pad_oe[63]), .CS(1'b0), .I(io_pad_o[63]), .OE(io_pad_oe[63]), .OD(1'b0), .PU(io_pad_pu[5]), .PD(io_pad_pd[5]), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad64 (.C(io_pad_i[64]), .A(), .PAD(io_pad64), .IE(~io_pad_oe[64]), .CS(1'b0), .I(io_pad_o[64]), .OE(io_pad_oe[64]), .OD(1'b0), .PU(io_pad_pu[6]), .PD(io_pad_pd[6]), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad65 (.C(io_pad_i[65]), .A(), .PAD(io_pad65), .IE(~io_pad_oe[65]), .CS(1'b0), .I(io_pad_o[65]), .OE(io_pad_oe[65]), .OD(1'b0), .PU(io_pad_pu[7]), .PD(io_pad_pd[7]), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
+P65_1233_PBMUX u_io_pad0 (.C(io_pad_i[0]),   .A(), .PAD(io_pad0),  .IE(~io_pad_oe[0]),  .CS(1'b0), .I(io_pad_o[0]),  .OE(io_pad_oe[0]),  .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad1 (.C(io_pad_i[1]),   .A(), .PAD(io_pad1),  .IE(~io_pad_oe[1]),  .CS(1'b0), .I(io_pad_o[1]),  .OE(io_pad_oe[1]),  .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad2 (.C(io_pad_i[2]),   .A(), .PAD(io_pad2),  .IE(~io_pad_oe[2]),  .CS(1'b0), .I(io_pad_o[2]),  .OE(io_pad_oe[2]),  .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad3 (.C(io_pad_i[3]),   .A(), .PAD(io_pad3),  .IE(~io_pad_oe[3]),  .CS(1'b0), .I(io_pad_o[3]),  .OE(io_pad_oe[3]),  .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad4 (.C(io_pad_i[4]),   .A(), .PAD(io_pad4),  .IE(~io_pad_oe[4]),  .CS(1'b0), .I(io_pad_o[4]),  .OE(io_pad_oe[4]),  .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad5 (.C(io_pad_i[5]),   .A(), .PAD(io_pad5),  .IE(~io_pad_oe[5]),  .CS(1'b0), .I(io_pad_o[5]),  .OE(io_pad_oe[5]),  .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad6 (.C(io_pad_i[6]),   .A(), .PAD(io_pad6),  .IE(~io_pad_oe[6]),  .CS(1'b0), .I(io_pad_o[6]),  .OE(io_pad_oe[6]),  .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1)); 
+P65_1233_PBMUX u_io_pad7 (.C(io_pad_i[7]),   .A(), .PAD(io_pad7),  .IE(~io_pad_oe[7]),  .CS(1'b0), .I(io_pad_o[7]),  .OE(io_pad_oe[7]),  .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad8 (.C(io_pad_i[8]),   .A(), .PAD(io_pad8),  .IE(~io_pad_oe[8]),  .CS(1'b0), .I(io_pad_o[8]),  .OE(io_pad_oe[8]),  .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad9 (.C(io_pad_i[9]),   .A(), .PAD(io_pad9),  .IE(~io_pad_oe[9]),  .CS(1'b0), .I(io_pad_o[9]),  .OE(io_pad_oe[9]),  .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad10 (.C(io_pad_i[10]), .A(), .PAD(io_pad10), .IE(~io_pad_oe[10]), .CS(1'b0), .I(io_pad_o[10]), .OE(io_pad_oe[10]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad11 (.C(io_pad_i[11]), .A(), .PAD(io_pad11), .IE(~io_pad_oe[11]), .CS(1'b0), .I(io_pad_o[11]), .OE(io_pad_oe[11]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad12 (.C(io_pad_i[12]), .A(), .PAD(io_pad12), .IE(~io_pad_oe[12]), .CS(1'b0), .I(io_pad_o[12]), .OE(io_pad_oe[12]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad13 (.C(io_pad_i[13]), .A(), .PAD(io_pad13), .IE(~io_pad_oe[13]), .CS(1'b0), .I(io_pad_o[13]), .OE(io_pad_oe[13]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad14 (.C(io_pad_i[14]), .A(), .PAD(io_pad14), .IE(~io_pad_oe[14]), .CS(1'b0), .I(io_pad_o[14]), .OE(io_pad_oe[14]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad15 (.C(io_pad_i[15]), .A(), .PAD(io_pad15), .IE(~io_pad_oe[15]), .CS(1'b0), .I(io_pad_o[15]), .OE(io_pad_oe[15]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad16 (.C(io_pad_i[16]), .A(), .PAD(io_pad16), .IE(~io_pad_oe[16]), .CS(1'b0), .I(io_pad_o[16]), .OE(io_pad_oe[16]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad17 (.C(io_pad_i[17]), .A(), .PAD(io_pad17), .IE(~io_pad_oe[17]), .CS(1'b0), .I(io_pad_o[17]), .OE(io_pad_oe[17]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad18 (.C(io_pad_i[18]), .A(), .PAD(io_pad18), .IE(~io_pad_oe[18]), .CS(1'b0), .I(io_pad_o[18]), .OE(io_pad_oe[18]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad19 (.C(io_pad_i[19]), .A(), .PAD(io_pad19), .IE(~io_pad_oe[19]), .CS(1'b0), .I(io_pad_o[19]), .OE(io_pad_oe[19]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad20 (.C(io_pad_i[20]), .A(), .PAD(io_pad20), .IE(~io_pad_oe[20]), .CS(1'b0), .I(io_pad_o[20]), .OE(io_pad_oe[20]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad21 (.C(io_pad_i[21]), .A(), .PAD(io_pad21), .IE(~io_pad_oe[21]), .CS(1'b0), .I(io_pad_o[21]), .OE(io_pad_oe[21]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad22 (.C(io_pad_i[22]), .A(), .PAD(io_pad22), .IE(~io_pad_oe[22]), .CS(1'b0), .I(io_pad_o[22]), .OE(io_pad_oe[22]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad23 (.C(io_pad_i[23]), .A(), .PAD(io_pad23), .IE(~io_pad_oe[23]), .CS(1'b0), .I(io_pad_o[23]), .OE(io_pad_oe[23]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad24 (.C(io_pad_i[24]), .A(), .PAD(io_pad24), .IE(~io_pad_oe[24]), .CS(1'b0), .I(io_pad_o[24]), .OE(io_pad_oe[24]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad25 (.C(io_pad_i[25]), .A(), .PAD(io_pad25), .IE(~io_pad_oe[25]), .CS(1'b0), .I(io_pad_o[25]), .OE(io_pad_oe[25]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad26 (.C(io_pad_i[26]), .A(), .PAD(io_pad26), .IE(~io_pad_oe[26]), .CS(1'b0), .I(io_pad_o[26]), .OE(io_pad_oe[26]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad27 (.C(io_pad_i[27]), .A(), .PAD(io_pad27), .IE(~io_pad_oe[27]), .CS(1'b0), .I(io_pad_o[27]), .OE(io_pad_oe[27]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad28 (.C(io_pad_i[28]), .A(), .PAD(io_pad28), .IE(~io_pad_oe[28]), .CS(1'b0), .I(io_pad_o[28]), .OE(io_pad_oe[28]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad29 (.C(io_pad_i[29]), .A(), .PAD(io_pad29), .IE(~io_pad_oe[29]), .CS(1'b0), .I(io_pad_o[29]), .OE(io_pad_oe[29]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad30 (.C(io_pad_i[30]), .A(), .PAD(io_pad30), .IE(~io_pad_oe[30]), .CS(1'b0), .I(io_pad_o[30]), .OE(io_pad_oe[30]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad31 (.C(io_pad_i[31]), .A(), .PAD(io_pad31), .IE(~io_pad_oe[31]), .CS(1'b0), .I(io_pad_o[31]), .OE(io_pad_oe[31]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad32 (.C(io_pad_i[32]), .A(), .PAD(io_pad32), .IE(~io_pad_oe[32]), .CS(1'b0), .I(io_pad_o[32]), .OE(io_pad_oe[32]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad33 (.C(io_pad_i[33]), .A(), .PAD(io_pad33), .IE(~io_pad_oe[33]), .CS(1'b0), .I(io_pad_o[33]), .OE(io_pad_oe[33]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad34 (.C(io_pad_i[34]), .A(), .PAD(io_pad34), .IE(~io_pad_oe[34]), .CS(1'b0), .I(io_pad_o[34]), .OE(io_pad_oe[34]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad35 (.C(io_pad_i[35]), .A(), .PAD(io_pad35), .IE(~io_pad_oe[35]), .CS(1'b0), .I(io_pad_o[35]), .OE(io_pad_oe[35]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad36 (.C(io_pad_i[36]), .A(), .PAD(io_pad36), .IE(~io_pad_oe[36]), .CS(1'b0), .I(io_pad_o[36]), .OE(io_pad_oe[36]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad37 (.C(io_pad_i[37]), .A(), .PAD(io_pad37), .IE(~io_pad_oe[37]), .CS(1'b0), .I(io_pad_o[37]), .OE(io_pad_oe[37]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad38 (.C(io_pad_i[38]), .A(), .PAD(io_pad38), .IE(~io_pad_oe[38]), .CS(1'b0), .I(io_pad_o[38]), .OE(io_pad_oe[38]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad39 (.C(io_pad_i[39]), .A(), .PAD(io_pad39), .IE(~io_pad_oe[39]), .CS(1'b0), .I(io_pad_o[39]), .OE(io_pad_oe[39]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad40 (.C(io_pad_i[40]), .A(), .PAD(io_pad40), .IE(~io_pad_oe[40]), .CS(1'b0), .I(io_pad_o[40]), .OE(io_pad_oe[40]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad41 (.C(io_pad_i[41]), .A(), .PAD(io_pad41), .IE(~io_pad_oe[41]), .CS(1'b0), .I(io_pad_o[41]), .OE(io_pad_oe[41]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad42 (.C(io_pad_i[42]), .A(), .PAD(io_pad42), .IE(~io_pad_oe[42]), .CS(1'b0), .I(io_pad_o[42]), .OE(io_pad_oe[42]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad43 (.C(io_pad_i[43]), .A(), .PAD(io_pad43), .IE(~io_pad_oe[43]), .CS(1'b0), .I(io_pad_o[43]), .OE(io_pad_oe[43]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad44 (.C(io_pad_i[44]), .A(), .PAD(io_pad44), .IE(~io_pad_oe[44]), .CS(1'b0), .I(io_pad_o[44]), .OE(io_pad_oe[44]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad45 (.C(io_pad_i[45]), .A(), .PAD(io_pad45), .IE(~io_pad_oe[45]), .CS(1'b0), .I(io_pad_o[45]), .OE(io_pad_oe[45]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad46 (.C(io_pad_i[46]), .A(), .PAD(io_pad46), .IE(~io_pad_oe[46]), .CS(1'b0), .I(io_pad_o[46]), .OE(io_pad_oe[46]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad47 (.C(io_pad_i[47]), .A(), .PAD(io_pad47), .IE(~io_pad_oe[47]), .CS(1'b0), .I(io_pad_o[47]), .OE(io_pad_oe[47]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad48 (.C(io_pad_i[48]), .A(), .PAD(io_pad48), .IE(~io_pad_oe[48]), .CS(1'b0), .I(io_pad_o[48]), .OE(io_pad_oe[48]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad49 (.C(io_pad_i[49]), .A(), .PAD(io_pad49), .IE(~io_pad_oe[49]), .CS(1'b0), .I(io_pad_o[49]), .OE(io_pad_oe[49]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad50 (.C(io_pad_i[50]), .A(), .PAD(io_pad50), .IE(~io_pad_oe[50]), .CS(1'b0), .I(io_pad_o[50]), .OE(io_pad_oe[50]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad51 (.C(io_pad_i[51]), .A(), .PAD(io_pad51), .IE(~io_pad_oe[51]), .CS(1'b0), .I(io_pad_o[51]), .OE(io_pad_oe[51]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad52 (.C(io_pad_i[52]), .A(), .PAD(io_pad52), .IE(~io_pad_oe[52]), .CS(1'b0), .I(io_pad_o[52]), .OE(io_pad_oe[52]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad53 (.C(io_pad_i[53]), .A(), .PAD(io_pad53), .IE(~io_pad_oe[53]), .CS(1'b0), .I(io_pad_o[53]), .OE(io_pad_oe[53]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad54 (.C(io_pad_i[54]), .A(), .PAD(io_pad54), .IE(~io_pad_oe[54]), .CS(1'b0), .I(io_pad_o[54]), .OE(io_pad_oe[54]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad55 (.C(io_pad_i[55]), .A(), .PAD(io_pad55), .IE(~io_pad_oe[55]), .CS(1'b0), .I(io_pad_o[55]), .OE(io_pad_oe[55]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad56 (.C(io_pad_i[56]), .A(), .PAD(io_pad56), .IE(~io_pad_oe[56]), .CS(1'b0), .I(io_pad_o[56]), .OE(io_pad_oe[56]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad57 (.C(io_pad_i[57]), .A(), .PAD(io_pad57), .IE(~io_pad_oe[57]), .CS(1'b0), .I(io_pad_o[57]), .OE(io_pad_oe[57]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad58 (.C(io_pad_i[58]), .A(), .PAD(io_pad58), .IE(~io_pad_oe[58]), .CS(1'b0), .I(io_pad_o[58]), .OE(io_pad_oe[58]), .OD(1'b0), .PU(io_pad_pu[0]), .PD(io_pad_pd[0]), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad59 (.C(io_pad_i[59]), .A(), .PAD(io_pad59), .IE(~io_pad_oe[59]), .CS(1'b0), .I(io_pad_o[59]), .OE(io_pad_oe[59]), .OD(1'b0), .PU(io_pad_pu[1]), .PD(io_pad_pd[1]), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad60 (.C(io_pad_i[60]), .A(), .PAD(io_pad60), .IE(~io_pad_oe[60]), .CS(1'b0), .I(io_pad_o[60]), .OE(io_pad_oe[60]), .OD(1'b0), .PU(io_pad_pu[2]), .PD(io_pad_pd[2]), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad61 (.C(io_pad_i[61]), .A(), .PAD(io_pad61), .IE(~io_pad_oe[61]), .CS(1'b0), .I(io_pad_o[61]), .OE(io_pad_oe[61]), .OD(1'b0), .PU(io_pad_pu[3]), .PD(io_pad_pd[3]), .DS0(1'b0), .DS1(1'b1));  
+P65_1233_PBMUX u_io_pad62 (.C(io_pad_i[62]), .A(), .PAD(io_pad62), .IE(~io_pad_oe[62]), .CS(1'b0), .I(io_pad_o[62]), .OE(io_pad_oe[62]), .OD(1'b0), .PU(io_pad_pu[4]), .PD(io_pad_pd[4]), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad63 (.C(io_pad_i[63]), .A(), .PAD(io_pad63), .IE(~io_pad_oe[63]), .CS(1'b0), .I(io_pad_o[63]), .OE(io_pad_oe[63]), .OD(1'b0), .PU(io_pad_pu[5]), .PD(io_pad_pd[5]), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad64 (.C(io_pad_i[64]), .A(), .PAD(io_pad64), .IE(~io_pad_oe[64]), .CS(1'b0), .I(io_pad_o[64]), .OE(io_pad_oe[64]), .OD(1'b0), .PU(io_pad_pu[6]), .PD(io_pad_pd[6]), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad65 (.C(io_pad_i[65]), .A(), .PAD(io_pad65), .IE(~io_pad_oe[65]), .CS(1'b0), .I(io_pad_o[65]), .OE(io_pad_oe[65]), .OD(1'b0), .PU(io_pad_pu[7]), .PD(io_pad_pd[7]), .DS0(1'b0), .DS1(1'b1));
 
-P65_1233_PBMUX u_io_pad66 (.C(io_pad_i[66]), .A(), .PAD(io_pad66), .IE(~io_pad_oe[66]), .CS(1'b0), .I(io_pad_o[66]), .OE(io_pad_oe[66]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad67 (.C(io_pad_i[67]), .A(), .PAD(io_pad67), .IE(~io_pad_oe[67]), .CS(1'b0), .I(io_pad_o[67]), .OE(io_pad_oe[67]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad68 (.C(io_pad_i[68]), .A(), .PAD(io_pad68), .IE(~io_pad_oe[68]), .CS(1'b0), .I(io_pad_o[68]), .OE(io_pad_oe[68]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad69 (.C(io_pad_i[69]), .A(), .PAD(io_pad69), .IE(~io_pad_oe[69]), .CS(1'b0), .I(io_pad_o[69]), .OE(io_pad_oe[69]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad70 (.C(io_pad_i[70]), .A(), .PAD(io_pad70), .IE(~io_pad_oe[70]), .CS(1'b0), .I(io_pad_o[70]), .OE(io_pad_oe[70]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad71 (.C(io_pad_i[71]), .A(), .PAD(io_pad71), .IE(~io_pad_oe[71]), .CS(1'b0), .I(io_pad_o[71]), .OE(io_pad_oe[71]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad72 (.C(io_pad_i[72]), .A(), .PAD(io_pad72), .IE(~io_pad_oe[72]), .CS(1'b0), .I(io_pad_o[72]), .OE(io_pad_oe[72]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad73 (.C(io_pad_i[73]), .A(), .PAD(io_pad73), .IE(~io_pad_oe[73]), .CS(1'b0), .I(io_pad_o[73]), .OE(io_pad_oe[73]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad74 (.C(io_pad_i[74]), .A(), .PAD(io_pad74), .IE(~io_pad_oe[74]), .CS(1'b0), .I(io_pad_o[74]), .OE(io_pad_oe[74]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad75 (.C(io_pad_i[75]), .A(), .PAD(io_pad75), .IE(~io_pad_oe[75]), .CS(1'b0), .I(io_pad_o[75]), .OE(io_pad_oe[75]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad76 (.C(io_pad_i[76]), .A(), .PAD(io_pad76), .IE(~io_pad_oe[76]), .CS(1'b0), .I(io_pad_o[76]), .OE(io_pad_oe[76]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad77 (.C(io_pad_i[77]), .A(), .PAD(io_pad77), .IE(~io_pad_oe[77]), .CS(1'b0), .I(io_pad_o[77]), .OE(io_pad_oe[77]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad78 (.C(io_pad_i[78]), .A(), .PAD(io_pad78), .IE(~io_pad_oe[78]), .CS(1'b0), .I(io_pad_o[78]), .OE(io_pad_oe[78]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad79 (.C(io_pad_i[79]), .A(), .PAD(io_pad79), .IE(~io_pad_oe[79]), .CS(1'b0), .I(io_pad_o[79]), .OE(io_pad_oe[79]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad80 (.C(io_pad_i[80]), .A(), .PAD(io_pad80), .IE(~io_pad_oe[80]), .CS(1'b0), .I(io_pad_o[80]), .OE(io_pad_oe[80]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
-P65_1233_PBMUX u_io_pad81 (.C(io_pad_i[81]), .A(), .PAD(io_pad81), .IE(~io_pad_oe[81]), .CS(1'b0), .I(io_pad_o[81]), .OE(io_pad_oe[81]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1), .VDD(VDD), .VDDIO(VDDIO), .VSS(VSS), .VSSIO(VSSIO));
+P65_1233_PBMUX u_io_pad66 (.C(io_pad_i[66]), .A(), .PAD(io_pad66), .IE(~io_pad_oe[66]), .CS(1'b0), .I(io_pad_o[66]), .OE(io_pad_oe[66]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad67 (.C(io_pad_i[67]), .A(), .PAD(io_pad67), .IE(~io_pad_oe[67]), .CS(1'b0), .I(io_pad_o[67]), .OE(io_pad_oe[67]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad68 (.C(io_pad_i[68]), .A(), .PAD(io_pad68), .IE(~io_pad_oe[68]), .CS(1'b0), .I(io_pad_o[68]), .OE(io_pad_oe[68]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad69 (.C(io_pad_i[69]), .A(), .PAD(io_pad69), .IE(~io_pad_oe[69]), .CS(1'b0), .I(io_pad_o[69]), .OE(io_pad_oe[69]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad70 (.C(io_pad_i[70]), .A(), .PAD(io_pad70), .IE(~io_pad_oe[70]), .CS(1'b0), .I(io_pad_o[70]), .OE(io_pad_oe[70]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad71 (.C(io_pad_i[71]), .A(), .PAD(io_pad71), .IE(~io_pad_oe[71]), .CS(1'b0), .I(io_pad_o[71]), .OE(io_pad_oe[71]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad72 (.C(io_pad_i[72]), .A(), .PAD(io_pad72), .IE(~io_pad_oe[72]), .CS(1'b0), .I(io_pad_o[72]), .OE(io_pad_oe[72]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad73 (.C(io_pad_i[73]), .A(), .PAD(io_pad73), .IE(~io_pad_oe[73]), .CS(1'b0), .I(io_pad_o[73]), .OE(io_pad_oe[73]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad74 (.C(io_pad_i[74]), .A(), .PAD(io_pad74), .IE(~io_pad_oe[74]), .CS(1'b0), .I(io_pad_o[74]), .OE(io_pad_oe[74]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad75 (.C(io_pad_i[75]), .A(), .PAD(io_pad75), .IE(~io_pad_oe[75]), .CS(1'b0), .I(io_pad_o[75]), .OE(io_pad_oe[75]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad76 (.C(io_pad_i[76]), .A(), .PAD(io_pad76), .IE(~io_pad_oe[76]), .CS(1'b0), .I(io_pad_o[76]), .OE(io_pad_oe[76]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad77 (.C(io_pad_i[77]), .A(), .PAD(io_pad77), .IE(~io_pad_oe[77]), .CS(1'b0), .I(io_pad_o[77]), .OE(io_pad_oe[77]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad78 (.C(io_pad_i[78]), .A(), .PAD(io_pad78), .IE(~io_pad_oe[78]), .CS(1'b0), .I(io_pad_o[78]), .OE(io_pad_oe[78]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad79 (.C(io_pad_i[79]), .A(), .PAD(io_pad79), .IE(~io_pad_oe[79]), .CS(1'b0), .I(io_pad_o[79]), .OE(io_pad_oe[79]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad80 (.C(io_pad_i[80]), .A(), .PAD(io_pad80), .IE(~io_pad_oe[80]), .CS(1'b0), .I(io_pad_o[80]), .OE(io_pad_oe[80]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
+P65_1233_PBMUX u_io_pad81 (.C(io_pad_i[81]), .A(), .PAD(io_pad81), .IE(~io_pad_oe[81]), .CS(1'b0), .I(io_pad_o[81]), .OE(io_pad_oe[81]), .OD(1'b0), .PU(1'b0), .PD(1'b0), .DS0(1'b0), .DS1(1'b1));
 
 endmodule

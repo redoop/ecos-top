@@ -1,0 +1,22 @@
+ROM Bootloader模块影响分析
+=============================
+
+问题根源：
+1. 当前使用的SimpleEdgeAiSoC.sv是不带ROM的版本
+2. CPU从0x00000000启动，但没有ROM代码可执行
+3. CPU执行随机指令或陷入异常状态
+
+影响：
+1. UART控制寄存器未被正确初始化 (显示0x00000000而非0x00000001)
+2. 没有bootloader程序来处理UART接收数据
+3. 没有程序将UART数据转发到GPIO
+
+解决方案：
+1. 使用SimpleEdgeAiSoC_Bootloader.sv (带ROM版本)
+2. 或在testbench中添加ROM模块
+3. 确保CPU能执行bootloader代码
+
+验证方法：
+- 检查CPU PC是否在ROM地址范围执行
+- 确认UART控制寄存器被正确设置为0x1
+- 监控bootloader的UART轮询循环

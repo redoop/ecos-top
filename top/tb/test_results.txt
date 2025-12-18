@@ -1,0 +1,30 @@
+ROM Bootloader UART 测试结果
+==============================
+
+编译状态: ✓ 成功
+- 使用VCS编译器
+- SystemVerilog支持
+- 7个模块编译完成
+
+仿真结果:
+- ROM Bootloader UART Test Starting... ✓
+- Time: 5000, GPIO Output: 0x09d79913 ⚠️ 
+- Sending UART data: 0x55 ✓
+- Sending UART data: 0xAA ✓  
+- GPIO Output: 0x00000000 ❌
+- Test completed ✓
+
+问题分析:
+1. 在5000ps时GPIO输出了0x09d79913 - 这可能是初始化或随机值
+2. 发送UART数据后GPIO输出为0x00000000 - 数据未正确传输
+
+可能原因:
+1. ROM访问逻辑问题 - CPU可能未从ROM读取指令
+2. UART配置问题 - UART可能未正确初始化
+3. 信号连接问题 - ROM数据未正确连接到CPU
+
+下一步调试:
+1. 检查CPU是否从地址0x00000000开始执行
+2. 验证ROM数据是否正确返回
+3. 检查UART状态和数据寄存器
+4. 添加更多调试信息
