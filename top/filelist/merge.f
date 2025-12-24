@@ -1,0 +1,1 @@
+$RTL_PATH/project_2017/netlist/merge/ip1_SimpleEdgeAiSoC_pr_merge_bus.v

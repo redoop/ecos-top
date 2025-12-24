@@ -1,0 +1,227 @@
+****************************************
+Report : analysis_coverage
+	-status_details {untested}
+	-sort_by slack
+	-check_type {setup hold recovery removal min_period max_skew clock_gating_setup clock_gating_hold out_setup out_hold}
+	-exclude_untested {constant_disabled false_paths}
+Design : ip1_SimpleEdgeAiSoC
+Version: U-2022.12-SP3
+Date   : Tue Dec 23 14:44:01 2025
+****************************************
+
+Type of Check         Total              Met         Violated         Untested
+--------------------------------------------------------------------------------
+setup                 26300     26232 (100%)         0 (  0%)        68 (  0%)
+hold                  26300     26232 (100%)         0 (  0%)        68 (  0%)
+clock_gating_setup      754       754 (100%)         0 (  0%)         0 (  0%)
+clock_gating_hold       754       754 (100%)         0 (  0%)         0 (  0%)
+out_setup                44        44 (100%)         0 (  0%)         0 (  0%)
+out_hold                 44        44 (100%)         0 (  0%)         0 (  0%)
+--------------------------------------------------------------------------------
+All Checks            54196     54060 (100%)         0 (  0%)       136 (  0%)
+
+
+Constrained                  Related             Check
+Pin                          Pin       Clock     Type         Slack  Reason
+--------------------------------------------------------------------------------
+riscv/mem_la_wdata_reg_0_/D  G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_0_/D  G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_1_/D  G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_1_/D  G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_2_/D  G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_2_/D  G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_3_/D  G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_3_/D  G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_4_/D  G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_4_/D  G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_5_/D  G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_5_/D  G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_6_/D  G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_6_/D  G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_7_/D  G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_7_/D  G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_8_/D  G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_8_/D  G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_9_/D  G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_9_/D  G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_10_/D G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_10_/D G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_11_/D G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_11_/D G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_12_/D G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_12_/D G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_13_/D G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_13_/D G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_14_/D G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_14_/D G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_15_/D G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_15_/D G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_la_wstrb_reg_1_/D  G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_la_wstrb_reg_1_/D  G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_la_wstrb_reg_3_/D  G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_la_wstrb_reg_3_/D  G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_16_/D G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_16_/D G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_17_/D G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_17_/D G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_18_/D G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_18_/D G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_19_/D G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_19_/D G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_20_/D G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_20_/D G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_21_/D G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_21_/D G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_22_/D G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_22_/D G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_23_/D G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_23_/D G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_24_/D G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_24_/D G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_25_/D G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_25_/D G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_26_/D G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_26_/D G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_27_/D G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_27_/D G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_28_/D G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_28_/D G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_29_/D G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_29_/D G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_la_wstrb_reg_2_/D  G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_la_wstrb_reg_2_/D  G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_30_/D G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_30_/D G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_31_/D G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_la_wdata_reg_31_/D G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_la_wstrb_reg_0_/D  G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_la_wstrb_reg_0_/D  G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_24_/D
+                             G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_24_/D
+                             G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_30_/D
+                             G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_30_/D
+                             G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_31_/D
+                             G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_31_/D
+                             G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_8_/D
+                             G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_8_/D
+                             G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_9_/D
+                             G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_9_/D
+                             G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_10_/D
+                             G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_10_/D
+                             G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_11_/D
+                             G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_11_/D
+                             G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_12_/D
+                             G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_12_/D
+                             G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_13_/D
+                             G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_13_/D
+                             G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_14_/D
+                             G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_14_/D
+                             G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_15_/D
+                             G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_15_/D
+                             G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_21_/D
+                             G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_21_/D
+                             G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_25_/D
+                             G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_25_/D
+                             G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_26_/D
+                             G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_26_/D
+                             G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_27_/D
+                             G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_27_/D
+                             G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_28_/D
+                             G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_28_/D
+                             G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_29_/D
+                             G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_29_/D
+                             G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_0_/D
+                             G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_0_/D
+                             G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_1_/D
+                             G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_1_/D
+                             G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_2_/D
+                             G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_2_/D
+                             G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_3_/D
+                             G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_3_/D
+                             G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_4_/D
+                             G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_4_/D
+                             G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_5_/D
+                             G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_5_/D
+                             G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_6_/D
+                             G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_6_/D
+                             G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_7_/D
+                             G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_7_/D
+                             G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_16_/D
+                             G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_16_/D
+                             G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_17_/D
+                             G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_17_/D
+                             G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_18_/D
+                             G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_18_/D
+                             G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_19_/D
+                             G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_19_/D
+                             G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_20_/D
+                             G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_20_/D
+                             G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_22_/D
+                             G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_22_/D
+                             G(fall)   -         setup     untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_23_/D
+                             G(fall)   -         hold      untested  no_endpoint_clock
+riscv/mem_rdata_word_reg_23_/D
+                             G(fall)   -         setup     untested  no_endpoint_clock
+1
